@@ -7,3 +7,8 @@ def check_rotation(s1, s2):
     if s1_len > 0 and s1_len = len(s2):
         return isSubstring(''.join([s1, s1]), s2)
     return False
+
+if __name__ == "__main__":
+    assert check_rotation('apple', 'pleap') == True
+    assert check_rotation('apple', 'ppale') == False
+    assert check_rotation('waterbottle', 'erbottlewat') == True
