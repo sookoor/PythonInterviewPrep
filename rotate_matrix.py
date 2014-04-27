@@ -1,4 +1,8 @@
 def rotate_matrix(matrix):
+    """ Given an image represented by an NxN matrix, where each pixel in
+    the image is 4 bytes, the method rotates the image by 90 degrees in
+    place. """
+
     rows = len(matrix)
 
     if rows != len(matrix[0]):
