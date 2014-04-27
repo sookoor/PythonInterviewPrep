@@ -4,23 +4,24 @@ def set_to_zero(matrix):
     rows = len(matrix) 
     cols = len(matrix[0])
 
-    out_matrix = rows * [cols * [None]]
+    rows_to_zero = set()
+    cols_to_zero = set()
 
     for row in range(rows):
         for col in range(cols):
 
             if matrix[row][col] == 0:
 
-                # Set row to zero
-                out_matrix[row] = cols * [0]
+                # Mark to be zeroed
+                rows_to_zero.add(row)
+                cols_to_zero.add(col)
 
-                # Set column to zero
-                for cur_row in range(row + 1, rows):
-                    out_matrix[cur_row][col] = 0
-            elif out_matrix[row][col] is None:
-                out_matrix[row][col] = matrix[row][col]
+    for row in range(rows):
+        for col in range(cols):
+            if row in rows_to_zero or col in cols_to_zero:
+                matrix[row][col] = 0
 
-    return out_matrix
+    return matrix
 
 if __name__ == "__main__":
     matrix = [[1, 0, 1, 1],
