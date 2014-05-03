@@ -12,3 +12,11 @@ class Stack(object):
             return self.data.pop()
         else:
             return None
+
+    def peek(self):
+        if self.data:
+            return self.data[-1]
+        return None
+
+    def isEmpty(self):
+        return not self.data
