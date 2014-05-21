@@ -35,4 +35,4 @@ if __name__ == "__main__":
         if value is None:
             exit(0)
         else:
-            print value
+            print(value)
