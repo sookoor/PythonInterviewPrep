@@ -8,60 +8,60 @@ class BinaryTree(object):
     def __init__(self):
         self.root = None
 
-    def in_order_r(self, root):
+    def _in_order(self, root):
         if root is not None:
-            self.in_order_r(root.children[0])
+            self._in_order(root.children[0])
             print root.data
-            self.in_order_r(root.children[1])
+            self._in_order(root.children[1])
 
     def in_order(self):
-        self.in_order_r(self.root)
+        self._in_order(self.root)
 
-    def pre_order_r(self, root):
+    def _pre_order(self, root):
         if root is not None:
             print root.data
-            self.pre_order_r(root.children[0])
-            self.pre_order_r(root.children[1])
+            self._pre_order(root.children[0])
+            self._pre_order(root.children[1])
 
     def pre_order(self):
-        self.pre_order_r(self.root)
+        self._pre_order(self.root)
 
-    def post_order_r(self, root):
+    def _post_order(self, root):
         if root is not None:
-            self.post_order_r(root.children[0])
-            self.post_order_r(root.children[1])
+            self._post_order(root.children[0])
+            self._post_order(root.children[1])
             print root.data
 
     def post_order(self):
-        self.post_order_r(self.root)
+        self._post_order(self.root)
 
-    def level_order_linked_lists_r(self, root, level, list_collection):
+    def _level_order_linked_lists(self, root, level, list_collection):
         if root is not None:
             if len(list_collection) <= level:
                 list_collection.append([root])
             else:
                 list_collection[level].append(root)
             if root.children[0]:
-                self.level_order_linked_lists_r(root.children[0], level + 1, list_collection)
+                self._level_order_linked_lists(root.children[0], level + 1, list_collection)
             if root.children[1]:
-                self.level_order_linked_lists_r(root.children[1], level + 1, list_collection) 
+                self._level_order_linked_lists(root.children[1], level + 1, list_collection) 
 
     def level_order_linked_lists(self):
         list_collection = []
-        self.level_order_linked_lists_r(self.root, 0, list_collection)
+        self._level_order_linked_lists(self.root, 0, list_collection)
         return list_collection
 
-    def insert_node_r(self, root, data):
+    def _insert_node(self, root, data):
         if root is None:
             root = Node(data)
         else:
             child = data > root.data
-            root.children[child] = self.insert_node_r(root.children[child], data)
+            root.children[child] = self._insert_node(root.children[child], data)
             root.children[child].parent = root
         return root
             
     def insert_node(self, data):
-        self.root = self.insert_node_r(self.root, data)
+        self.root = self._insert_node(self.root, data)
 
     def build_binary_tree(self, array):
         mid = len(array) / 2
@@ -104,14 +104,14 @@ class BinaryTree(object):
             if next_node is not None and next_node.children[0] == node:
                 return next_node
 
-    def LCA_r(self, root, p, q):
+    def _LCA(self, root, p, q):
         if root is None:
             return None
         elif root == p or root == q:
             return root
         else:
-            left = self.LCA_r(root.children[0], p, q)
-            right = self.LCA_r(root.children[1], p, q)
+            left = self._LCA(root.children[0], p, q)
+            right = self._LCA(root.children[1], p, q)
             
         # If p and q are on either side of root
         if left and right:
@@ -122,7 +122,54 @@ class BinaryTree(object):
             return right
 
     def LCA(self, p, q):
-        return self.LCA_r(self.root, p, q)
+        return self._LCA(self.root, p, q)
+
+    def _is_identical(self, root1, root2):
+        if root1 is None and root2 is None:
+            return True
+        elif root1 is None or root2 is None:
+            return False
+        else:
+            return root1.data == root2.data and self._is_identical(root1.children[0], root2.children[0]) and self._is_identical(root1.children[1], root2.children[1])
+
+    def _is_subtree(self, root, target):
+        if root is None:
+            return False
+        elif target is None or self._is_identical(root, target):
+            return True
+        else:
+            return self._is_subtree(root.children[0], target) or self._is_subtree(root.children[1], target)
+
+    def is_subtree(self, target):
+        return self._is_subtree(self.root, target.root)
+
+    def _check_sum(self, root, value, paths, cur_path=None):
+
+        if cur_path is None:
+            cur_path = []
+
+        if root is not None:
+            if root.data == value:
+                cur_path = []
+                paths.append([root.data])
+            elif root.data > value:
+                cur_path = []
+            elif root.data + sum(cur_path) < value:
+                cur_path.append(root.data)
+            elif root.data + sum(cur_path) == value:
+                paths.append(cur_path + [root.data])
+                cur_path = []
+            elif root.data + sum(cur_path) > value:
+                cur_path = [root.data]
+
+            self._check_sum(root.children[0], value, paths, cur_path)
+            self._check_sum(root.children[1], value, paths, cur_path)
+
+    def check_sum(self, value):
+        paths = []
+        self._check_sum(self.root, value, paths)
+        return paths
+                
             
 if __name__ == "__main__":
     binary_tree = BinaryTree()
@@ -130,20 +177,26 @@ if __name__ == "__main__":
     for d in data:
         binary_tree.insert_node(d)
 
+    print 'In-order'
     binary_tree.in_order()
     print '---'
+
+    print 'Pre-order'
     binary_tree.pre_order()
     print '---'
-    binary_tree.post_order()
 
-    print binary_tree.check_balanced()
+    print 'Post-order'
+    binary_tree.post_order()
+    print '---'
+
+    assert(binary_tree.check_balanced() == True)
 
     unbalanced_tree = BinaryTree()
     unbalanced_data = [2, 1, 3, 4, 6]
     for d in unbalanced_data:
         unbalanced_tree.insert_node(d)
 
-    print unbalanced_tree.check_balanced()
+    assert (unbalanced_tree.check_balanced() == False)
 
     built_tree = BinaryTree()
     built_tree.build_binary_tree(sorted(data))
@@ -155,7 +208,6 @@ if __name__ == "__main__":
         print "Level " + str(level)
         for node in node_list:
             print node.data
-
 
     cur_node = built_tree.root.children[1].children[0].children[0]
     next_node = built_tree.next_node(cur_node)
@@ -171,3 +223,20 @@ if __name__ == "__main__":
         print "The LCA of " + str(p.data) + " and " + str(q.data) + " is " + str(lca.data)
     else:
         print str(p.data) + " and " + str(q.data) + " do not have an LCA"
+
+    
+    s = [6, 7, 8, 9]
+    t = [2, 3, 4]
+
+    subtree = BinaryTree()
+    subtree.build_binary_tree(s)
+
+    not_subtree = BinaryTree()
+    not_subtree.build_binary_tree(t)
+
+    assert (binary_tree.is_subtree(subtree) == True)
+    assert (binary_tree.is_subtree(not_subtree) == False)
+
+    print built_tree.check_sum(5)
+    print built_tree.check_sum(6)
+    print built_tree.check_sum(17)
