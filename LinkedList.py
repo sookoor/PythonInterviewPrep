@@ -86,7 +86,7 @@ class LinkedList(object):
             while node_list[head].data < x and head < num_nodes:
                 head += 1
                 
-            if node_list[head] >= x:
+            if node_list[head].data >= x:
                 while node_list[tail].data >= x and tail > head:
                     tail -= 1
                     
@@ -108,7 +108,29 @@ class LinkedList(object):
                 cur.next = node
                 cur = cur.next
             cur.next = None
-    
+
+    def partition_list_no_array(self, x):
+        lower_tail = None
+        remaining_head = None
+        next_node = self.head
+        self.head = None
+        while next_node:
+            cur = next_node
+            next_node = next_node.next
+            if cur.data < x:
+                if self.head is None:
+                    lower_tail = cur
+                cur.next = self.head
+                self.head = cur
+            else:
+                cur.next = remaining_head
+                remaining_head = cur
+
+        if lower_tail:
+            lower_tail.next = remaining_head
+        else:
+            self.head = remaining_head
+          
 if __name__ == "__main__":
     linked_list = LinkedList()
     for val in [1, 2, 1, 3, 2]:
@@ -117,16 +139,27 @@ if __name__ == "__main__":
     linked_list.print_list()
 
     linked_list.partition_list(2)
-
+    
     linked_list.print_list()
 
-    print linked_list.nth_to_last(2).data
+    print(linked_list.nth_to_last(2).data)
 
     linked_list.remove_duplicates()
     linked_list.print_list()
     
     linked_list.delete_middle_node(linked_list.head.next)
     linked_list.print_list()
+
+    print('LINKED LIST 1')
+
+    linked_list_1 = LinkedList()
+    for val in [1, 2, 1, 3, 2]:
+        linked_list_1.add_node(val)
+    linked_list_1.print_list()
+    linked_list_1.partition_list_no_array(2)
+    linked_list_1.print_list()
+
+    print('---')
 
     linked_list_2 = LinkedList()
     for val in [1, 1]:
@@ -136,4 +169,4 @@ if __name__ == "__main__":
     linked_list_2.remove_duplicates_no_buffer()
     linked_list_2.print_list()
     
-    print linked_list_2.nth_to_last(2)
+    print(linked_list_2.nth_to_last(2))
