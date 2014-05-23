@@ -23,6 +23,21 @@ def set_to_zero(matrix):
 
     return matrix
 
+def set_to_zero_1(matrix):
+    cols = []
+    num_cols = len(matrix[0])
+    for r, row in enumerate(matrix):
+        if 0 in row:
+            cols.extend([i for i, x in enumerate(row) if x == 0])
+            matrix[r] = [0] * num_cols
+            
+    for row in range(len(matrix)):
+        for col in cols:
+            matrix[row][col] = 0
+
+    return matrix
+
+
 if __name__ == "__main__":
     matrix = [[1, 0, 1, 1],
               [1, 0, 0, 0],
@@ -32,3 +47,4 @@ if __name__ == "__main__":
 
     print matrix
     print set_to_zero(matrix)
+    assert set_to_zero(matrix) == set_to_zero_1(matrix)
