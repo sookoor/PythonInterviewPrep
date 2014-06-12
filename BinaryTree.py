@@ -1,3 +1,5 @@
+import sys
+
 class Node(object):
     def __init__(self, data = None):
         self.data = data
@@ -11,7 +13,7 @@ class BinaryTree(object):
     def _in_order(self, root):
         if root is not None:
             self._in_order(root.children[0])
-            print root.data
+            print(root.data)
             self._in_order(root.children[1])
 
     def in_order(self):
@@ -19,7 +21,7 @@ class BinaryTree(object):
 
     def _pre_order(self, root):
         if root is not None:
-            print root.data
+            print(root.data)
             self._pre_order(root.children[0])
             self._pre_order(root.children[1])
 
@@ -30,7 +32,7 @@ class BinaryTree(object):
         if root is not None:
             self._post_order(root.children[0])
             self._post_order(root.children[1])
-            print root.data
+            print(root.data)
 
     def post_order(self):
         self._post_order(self.root)
@@ -51,29 +53,33 @@ class BinaryTree(object):
         self._level_order_linked_lists(self.root, 0, list_collection)
         return list_collection
 
-    def _insert_node(self, root, data):
+    def _insert_node(self, root, data, bst):
         if root is None:
             root = Node(data)
         else:
-            child = data > root.data
-            root.children[child] = self._insert_node(root.children[child], data)
+            if bst == True:
+                child = data > root.data
+            else:
+                child = data < root.data
+
+            root.children[child] = self._insert_node(root.children[child], data, bst)
             root.children[child].parent = root
         return root
             
-    def insert_node(self, data):
-        self.root = self._insert_node(self.root, data)
+    def insert_node(self, data, bst = True):
+        self.root = self._insert_node(self.root, data, bst)
 
-    def build_binary_tree(self, array):
+    def build_binary_tree(self, array, bst = True):
         mid = len(array) / 2
-        self.insert_node(array[mid])
+        self.insert_node(array[mid], bst)
 
         left = array[:mid]
         if left:
-            self.build_binary_tree(left)
+            self.build_binary_tree(left, bst)
 
         right = array[mid+1:]
         if right:
-            self.build_binary_tree(right)
+            self.build_binary_tree(right, bst)
 
     def max_depth(self, root):
         if root is None:
@@ -170,6 +176,24 @@ class BinaryTree(object):
         self._check_sum(self.root, value, paths)
         return paths
                 
+
+    def _is_bst(self, root):
+        if root is None:
+            return True
+        else:
+            left = self._is_bst(root.children[0])
+            if root.children[0] is not None:
+                left = left and root.children[0].data <= root.data
+                
+            right = self._is_bst(root.children[1])
+            if root.children[1] is not None:
+                right = right and root.children[1].data > root.data
+
+            return left and right
+
+    def is_bst(self):
+        return self._is_bst(self.root)
+        
             
 if __name__ == "__main__":
     binary_tree = BinaryTree()
@@ -240,3 +264,18 @@ if __name__ == "__main__":
     print built_tree.check_sum(5)
     print built_tree.check_sum(6)
     print built_tree.check_sum(17)
+
+
+    assert binary_tree.is_bst() == True
+    
+    not_bst = BinaryTree()
+    not_bst.build_binary_tree(s, False)
+
+    lists = not_bst.level_order_linked_lists()
+
+    for li in lists:
+        for l in li:
+            sys.stdout.write(str(l.data) + " ")
+        print " "
+
+    assert not_bst.is_bst() == False
