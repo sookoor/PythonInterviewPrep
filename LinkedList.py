@@ -77,6 +77,57 @@ class LinkedList(object):
         if node is not None and node.next is not None:
             node.data = node.next.data
             node.next = node.next.next
+            
+    def _compare(self, l1, l2):
+        if l1 is None and l2 is None:
+            return True
+        elif (l1 is None and l2 is not None) or (l2 is None and l1 is not None) or (l1.data != l2.data):
+            return False
+        return self._compare(l1.next, l2.next)
+
+    def compare(self, linked_list):
+        return self._compare(self.head, linked_list)
+
+    def _reverse(self, linked_list):
+        if linked_list:
+            prev = None
+            cur = linked_list
+            while cur:
+                next = cur.next
+                cur.next = prev
+                prev = cur
+                cur = next
+            return prev
+
+    def is_palindrome(self):
+        slow = self.head
+        fast = self.head
+        prev = self.head
+        while fast and fast.next:
+            fast = fast.next.next
+            prev = slow
+            slow = slow.next
+        prev.next = None
+
+        # fast = None => even number of nodes
+        if fast:
+            middle = slow
+            slow = slow.next
+        else:
+            middle = None
+
+        second_half = self._reverse(slow)
+        res = self.compare(second_half)
+
+        second_half = self._reverse(second_half)
+
+        if middle:
+            prev.next = middle
+            middle.next = second_half
+        else:
+            prev.next = second_half
+            
+        return res
         
     def _partition_list(self, node_list, x):
         num_nodes = len(node_list)
@@ -131,6 +182,27 @@ class LinkedList(object):
         else:
             self.head = remaining_head
           
+    def partition_list_2(self, x):
+        if self.head:
+            cur_node = self.head
+            remaining = Node()
+            self.head = remaining
+            
+            while cur_node:
+                cur = cur_node
+                cur_node = cur_node.next
+
+                if cur.data < x:
+                    cur.next = self.head
+                    self.head = cur
+                else:
+                    if remaining.data is None:
+                        remaining = cur
+                        cur.next = None
+                    else:
+                        cur.next = remaining
+                        remaining = cur
+
 if __name__ == "__main__":
     linked_list = LinkedList()
     for val in [1, 2, 1, 3, 2]:
@@ -170,3 +242,26 @@ if __name__ == "__main__":
     linked_list_2.print_list()
     
     print(linked_list_2.nth_to_last(2))
+    
+    print('LINKED LIST 3')
+
+    linked_list_3 = LinkedList()
+    for val in [1, 2, 1, 3, 2]:
+        linked_list_3.add_node(val)
+    linked_list_3.print_list()
+    linked_list_3.partition_list_no_array(2)
+    linked_list_3.print_list()
+
+    print('---')
+
+    linked_list_4 = LinkedList()
+    linked_list_4.add_node('a')
+    linked_list_4.add_node('b')
+    linked_list_4.add_node('a')
+    linked_list_4.add_node('c')
+    linked_list_4.add_node('a')
+    linked_list_4.add_node('b')
+    linked_list_4.add_node('a')
+    linked_list_4.print_list()
+    print(linked_list_4.is_palindrome())
+    linked_list_4.print_list()

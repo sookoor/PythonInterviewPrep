@@ -8,6 +8,18 @@ class BinaryTree(object):
     def __init__(self):
         self.root = None
 
+    def _insert_node(self, root, data):
+        if root is None:
+            root = Node(data)
+        else:
+            child = data > root.data
+            root.children[child] = self._insert_node(root.children[child], data)
+            root.children[child].parent = root
+        return root
+            
+    def insert_node(self, data):
+        self.root = self._insert_node(self.root, data)
+
     def _in_order(self, root):
         if root is not None:
             self._in_order(root.children[0])
@@ -50,18 +62,6 @@ class BinaryTree(object):
         list_collection = []
         self._level_order_linked_lists(self.root, 0, list_collection)
         return list_collection
-
-    def _insert_node(self, root, data):
-        if root is None:
-            root = Node(data)
-        else:
-            child = data > root.data
-            root.children[child] = self._insert_node(root.children[child], data)
-            root.children[child].parent = root
-        return root
-            
-    def insert_node(self, data):
-        self.root = self._insert_node(self.root, data)
 
     def build_binary_tree(self, array):
         mid = len(array) / 2
@@ -169,8 +169,38 @@ class BinaryTree(object):
         paths = []
         self._check_sum(self.root, value, paths)
         return paths
+
+    def _longest_bst(self, root):
+        if root is None:
+            return 0
+        else:
+            left_size = self._longest_bst(root.children[0])
+            right_size = self._longest_bst(root.children[1])
+            max_child_size = max(abs(left_size), abs(right_size))
+
+            if left_size == 0 and right_size == 0:
+                return 1
+            elif left_size < 0 or right_size < 0:
+                return - max_child_size
+            elif left_size == 0:
+                if root.data < root.children[1].data:
+                    return 1 + right_size
+                else:
+                    return -right_size
+            elif right_size == 0:
+                if root.data >= root.children[0].data:
+                    return 1 + left_size
+                else:
+                    return -left_size
+            elif root.data >= root.children[0] and root.data < root.children[1]:
+                return 1 + max_child_size
+            else:
+                return -max_child_size
                 
-            
+    def longest_bst(self):
+        return abs(self._longest_bst(self.root))
+
+
 if __name__ == "__main__":
     binary_tree = BinaryTree()
     data = [5, 2, 8, 4, 9, 3, 1, 7, 6]
@@ -240,3 +270,10 @@ if __name__ == "__main__":
     print built_tree.check_sum(5)
     print built_tree.check_sum(6)
     print built_tree.check_sum(17)
+
+
+    bt = [5, 6, 12, 8, 9, 10]
+    bin_tree = BinaryTree()
+    bin_tree.build_binary_tree(bt)
+    bin_tree.in_order()
+    print bin_tree.longest_bst()
